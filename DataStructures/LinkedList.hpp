@@ -14,14 +14,27 @@
 template < typename T >
 class LinkedList final {
 public:
+    /***************************************************************************//**
+    * Brief: Constructor
+    *           
+    * @param : none
+    ******************************************************************************/
     LinkedList() {}
-    
+    /***************************************************************************//**
+    * Brief: Destructor
+    *           
+    * @param : none
+    ******************************************************************************/
     ~LinkedList() { 
         removeNodes(head);
         head = tail = nullptr;
     }
-
-    void Add(const T data) {
+    /***************************************************************************//**
+    * Brief: remove first element of the LinkedList
+    *           
+    * @param : none
+    ******************************************************************************/
+    auto Add(const T data) -> void {
         if (nullptr == head) {
             head = createNewNode(data);
             tail = head;
@@ -31,28 +44,44 @@ public:
             tail->next = node;
             tail = node;
         }
+        m_size++;
     }
-
-    void PopFront() {
+    /***************************************************************************//**
+    * Brief: remove first element of the LinkedList
+    *           
+    * @param : none
+    ******************************************************************************/
+    auto PopFront() -> void {
         auto node = head;
         if (nullptr != node) {
             if (tail == node) tail = node->next;
             head = node->next;
             head->prev = nullptr;
             delete node;
+            m_size--;
         }
     }
-
-    void PopBack() {
+    /***************************************************************************//**
+    * Brief: remove last element of the LinkedList
+    * 
+    * @param : none
+    ******************************************************************************/
+    auto PopBack() -> void {
         auto node = tail;
         if (nullptr != node) {
             tail = node->prev;
             if (head == node) head = tail;
-            tail->next = nullptr;
+            if (nullptr != tail) tail->next = nullptr;
             delete node;
+            m_size--;
         }
     }
-
+    /***************************************************************************//**
+    * Brief: chevron operator
+    * 
+    * @param :  out : std::ostream
+    *           ll  : LinkedList
+    ******************************************************************************/
     friend std::ostream& operator << (std::ostream &out, const LinkedList<T> &ll) {
         out << CONSOLE_OUTPUT_LEFT_BRACKET << CONSOLE_OUTPUT_SPACING;
         auto n = ll.head;
@@ -63,10 +92,20 @@ public:
         out << CONSOLE_OUTPUT_RIGHT_BRACKET;
         return out;
     }
+    /***************************************************************************//**
+    * Brief: get current LinkedList size
+    * 
+    * @param    :  node
+    * @return   :  size : std::size_t 
+    ******************************************************************************/
+    auto Size() -> std::size_t {
+        return m_size;
+    }
 
 private:
     Node<T> *head{nullptr}, 
             *tail{nullptr};
-};
+    std::size_t m_size {0};
+}; // class LinkedList
 
 #endif
