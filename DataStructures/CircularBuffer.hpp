@@ -1,48 +1,63 @@
+/** @file CircularBuffer.hpp
+ *  @brief Class definition of a circular buffer
+ * 
+ *  CircularBuffer class uses a linked list to
+ *  define a buffer of a fixed size.
+ * 
+ *  @author Massinissa Bandou
+ *  @bug No known bugs.
+ */
 #ifndef CIRCULARBUFFER_HPP_
 #define CIRCULARBUFFER_HPP_
 
-/******************************
- *     std includes
-*******************************/
+/***********************************************************
+ *                   std includes
+***********************************************************/
 #include <iostream>
-/******************************
- *    internal includes
-*******************************/
+
+/***********************************************************
+ *                 internal includes
+***********************************************************/
 #include "LinkedList.hpp"
 
-template < typename T , const int size>
+template < typename T , const int size >
+/** @class CircularBuffer
+ *  @brief This class define a circular buffer of a fixed size
+ */
 class CircularBuffer final {
 public:
     /***************************************************************************//**
-    * Brief: Constructor
+    * @brief : Constructor
     *           
     * @param : none
     ******************************************************************************/
-    CircularBuffer() {}
+    CircularBuffer() = default;
     /***************************************************************************//**
-    * Brief: Destructor
+    * @brief : Destructor
     *           
     * @param : none
     ******************************************************************************/
-    ~CircularBuffer() {}
+    ~CircularBuffer();
     /***************************************************************************//**
-    * Brief: add an element to buffer
+    * @brief : add an element to buffer
     *           
-    * @param : input : const T
+    * @param in : input - const T 
     ******************************************************************************/
-    auto put(const T input) -> void {
-        if (m_linkedList.Size() == size) {
-            m_linkedList.PopFront();
-        }
-        m_linkedList.Add(input);
-    } 
+    auto Put( const T input ) -> void;
     /***************************************************************************//**
-    * Brief: chevron operator
+    * @brief : remove an element to buffer
+    *           
+    * @param in : input - const T 
+    ******************************************************************************/
+    auto Remove( const T input ) -> void;
+    /***************************************************************************//**
+    * @brief : chevron operator
     * 
-    * @param :  out : std::ostream
-    *           CB  : Circular Buffer
+    * @param in  :  out : reference of std::ostream 
+    *              CB  : CircularBuffer<T, size>
+    * @param out : std::ostream&
     ******************************************************************************/
-    friend std::ostream& operator << (std::ostream &out, const CircularBuffer<T, size> &CB) {
+    friend auto operator << ( std::ostream &out, const CircularBuffer<T, size> &CB ) -> std::ostream& {
         out << CB.m_linkedList;
         return out;
     }
@@ -50,5 +65,24 @@ public:
 private:
     LinkedList<T> m_linkedList;
 }; // class CircularBuffer
+
+/***********************************************************
+ *                Functions definition
+************************************************************/
+template < typename T, const int size>
+CircularBuffer<T,size>::~CircularBuffer() {}
+
+template < typename T, const int size >
+auto CircularBuffer<T,size>::Put( const T input ) -> void {
+    if (m_linkedList.Size() == size) {
+        m_linkedList.PopFront();
+    }
+    m_linkedList.Add(input);
+}
+
+template < typename T, const int size >
+auto CircularBuffer<T,size>::Remove( const T input ) -> void {
+    m_linkedList.Remove(input);
+}
 
 #endif
