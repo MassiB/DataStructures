@@ -13,6 +13,7 @@
 *        std includes
 *******************************/
 #include <iostream>
+#include <list>
 
 /******************************
 *     internal includes
@@ -20,6 +21,7 @@
 #include "DataStructures/LinkedList.hpp"
 #include "DataStructures/CircularBuffer.hpp"
 #include "DataStructures/BinaryTree.hpp"
+#include "DataStructures/Graph.hpp"
 
 int main( int argc, char *argv[] ) {
     //-------------------------//
@@ -87,6 +89,25 @@ int main( int argc, char *argv[] ) {
     BT.Insert(7);
     BT.Insert(9);
     std::cout << BT << std::endl;
+    //-------------------------//
+    //         Graph           //
+    //-------------------------//
+    std::cout << "*********** Graph ************" << std::endl;
+    const int vertices = 4;
+    std::list<EDGE<int>> l;
+    EDGE<int> edg0(1,2);
+    EDGE<int> edg1(2,3);
+    EDGE<int> edg2(3,4);
+    EDGE<int> edg3(4,1);
+    EDGE<int> edg4(2,4);
+    l.push_back(edg0);
+    l.push_back(edg1);
+    l.push_back(edg2);
+    l.push_back(edg3);
+    l.push_back(edg4);
+    Graph<int> graph(vertices);
+    graph.Add(l);
+    std::cout << graph << std::endl;
 
     return (0);
 } // main
