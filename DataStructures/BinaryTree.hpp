@@ -15,7 +15,7 @@
 /***********************************************************
  *               internal includes
 ***********************************************************/
-#include "node.hpp" 
+#include "../Misc/node.hpp" 
 #include "../Misc/constants.hpp"
 #include "LinkedList.hpp"
 

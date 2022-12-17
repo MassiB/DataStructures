@@ -11,21 +11,25 @@
  *     std includes
 *******************************/
 #include <iostream>
+#include <thread>
+#include <mutex>
 
 /******************************
  *    internal includes
 *******************************/
-#include "node.hpp" 
+#include "../Misc/node.hpp" 
 #include "../Misc/constants.hpp"
+#include "../Misc/Exception.hpp"
 
 template < typename T >
 /** @class LinkedList
  *  @brief This class define a doubly linked list
+ *         of any data type.
  */
 class LinkedList final {
 public:
     /** @enum REMOVAL_OPTION
-    *  @brief option used to remove element from the linked list
+    *   @brief options used to remove element from the linked list
     */
     enum REMOVAL_OPTION 
     {
@@ -105,6 +109,13 @@ public:
     ******************************************************************************/
     auto Back() -> T;
     /***************************************************************************//**
+    * @brief : Search index operator
+    * 
+    * @param in:  out  - 
+    * @return  :  T    - value at index
+    ******************************************************************************/
+    auto operator[] ( const std::size_t index ) -> T&;
+    /***************************************************************************//**
     * @brief : chevron operator
     * 
     * @param :  out  - reference to std::ostream
@@ -115,17 +126,17 @@ public:
             << CONSOLE_OUTPUT_SPACING;
         auto n = ll.head;
         while (nullptr != n) {
-            out << n->data << CONSOLE_OUTPUT_SPACING;
+            out << n->data << CONSOLE_OUTPUT_RIGHT_ARROW;
             n = n->next;
         }
         out << CONSOLE_OUTPUT_RIGHT_BRACKET;
         return out;
     }
-
 private:
     Node<T> *head {nullptr}, 
             *tail {nullptr};
     std::size_t m_size {0};
+    std::mutex m_mutex;
 }; // class LinkedList
 
 /***********************************************************
@@ -139,6 +150,7 @@ LinkedList<T>::~LinkedList() {
 
 template < typename T >
 auto LinkedList<T>::Add( const T data ) -> void {
+    std::lock_guard<std::mutex> guard(m_mutex);
     if (nullptr == head) {
         head = createNewNode(data);
         tail = head;
@@ -153,6 +165,7 @@ auto LinkedList<T>::Add( const T data ) -> void {
 
 template < typename T >
 auto LinkedList<T>::Remove( const T data, REMOVAL_OPTION option ) -> void {
+    std::lock_guard<std::mutex> guard(m_mutex);
     auto node = head;
     while (nullptr != node) {
         if (node->data == data){
@@ -181,6 +194,7 @@ auto LinkedList<T>::Clear() -> void {
 
 template < typename T >
 auto LinkedList<T>::PopFront() -> void {
+    std::lock_guard<std::mutex> guard(m_mutex);
     auto node = head;
     if (nullptr != node) {
         if (tail == node) tail = node->next;
@@ -193,6 +207,7 @@ auto LinkedList<T>::PopFront() -> void {
 
 template < typename T >
 auto LinkedList<T>::PopBack() -> void {
+    std::lock_guard<std::mutex> guard(m_mutex);
     auto node = tail;
     if (nullptr != node) {
         tail = node->prev;
@@ -215,12 +230,24 @@ auto LinkedList<T>::Empty() -> bool {
 
 template < typename T >
 auto LinkedList<T>::Front() -> T {
+    //if (nullptr == head) throw Exception("Access to null memory");
     return head->data;
 }
 
 template < typename T >
 auto LinkedList<T>::Back() -> T {
+    //if (nullptr == tail) throw Exception("Access to null memory");
     return tail->data;
+}
+
+template < typename T >
+auto LinkedList<T>::operator[] ( const std::size_t index ) -> T& {
+    auto node = head;
+    for ( auto i(0); i < index; ++i ) {
+        if (nullptr == node) throw Exception("Index out of range");
+        node = node->next;
+    }
+    return *node;
 }
 
 #endif
