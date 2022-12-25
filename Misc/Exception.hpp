@@ -13,7 +13,7 @@
 #include <exception>
 
 /** @class Exception
- *  @brief Class defines exception handling
+ *  @brief Class defines custom exception handling
  */
 class Exception : public std::exception {
 public:
@@ -30,14 +30,14 @@ public:
     ******************************************************************************/
     ~Exception() = default;
     /***************************************************************************//**
-    * @brief : Returns the general error
+    * @brief : Returns exception error
     *           
     * @param : none
+    * @return: const char * - pointer to error message
     ******************************************************************************/
     const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override;
-
 private:
     const char * m_error {""};
-};
+}; // class Exception
 
 #endif
