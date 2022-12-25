@@ -20,7 +20,7 @@
 ***********************************************************/
 #include "LinkedList.hpp"
 
-template < typename T , const int size >
+template < typename T , std::size_t size >
 /** @class CircularBuffer
  *  @brief This class define a circular buffer of a fixed size
  */
@@ -34,55 +34,78 @@ public:
     CircularBuffer() = default;
     /***************************************************************************//**
     * @brief : Destructor
-    *           
+    * 
     * @param : none
     ******************************************************************************/
-    ~CircularBuffer();
+    ~CircularBuffer() = default;
     /***************************************************************************//**
     * @brief : add an element to buffer
     *           
     * @param in : input - const T 
     ******************************************************************************/
-    auto Put( const T input ) -> void;
+    auto put( const T input ) -> void;
     /***************************************************************************//**
-    * @brief : remove an element to buffer
+    * @brief : Remove an element to buffer
     *           
     * @param in : input - const T 
     ******************************************************************************/
-    auto Remove( const T input ) -> void;
+    auto remove( const T input ) -> void;
     /***************************************************************************//**
-    * @brief : chevron operator
-    * 
-    * @param in  :  out : reference of std::ostream 
-    *              CB  : CircularBuffer<T, size>
-    * @param out : std::ostream&
+    * @brief : Remove all elements in current buffer
+    *           
+    * @param : none
     ******************************************************************************/
-    friend auto operator << ( std::ostream &out, const CircularBuffer<T, size> &CB ) -> std::ostream& {
-        out << CB.m_linkedList;
-        return out;
-    }
-
+    auto removeAll() -> void;
+    /***************************************************************************//**
+    * @brief : Verify if circular buffer is empty or not
+    *           
+    * @param  : none
+    * @return : Return true if circular buffer is empty
+    ******************************************************************************/
+    auto empty() -> bool;
+    /***************************************************************************//**
+    * @brief : Index operator
+    * 
+    * @param in:  index position
+    * @return  :  Reference to data at position index  
+    ******************************************************************************/
+    auto operator[] ( const std::size_t index ) -> T&;
 private:
     LinkedList<T> m_linkedList;
 }; // class CircularBuffer
-
 /***********************************************************
  *                Functions definition
 ************************************************************/
-template < typename T, const int size>
-CircularBuffer<T,size>::~CircularBuffer() {}
-
-template < typename T, const int size >
-auto CircularBuffer<T,size>::Put( const T input ) -> void {
-    if (m_linkedList.Size() == size) {
-        m_linkedList.PopFront();
+template < typename T, std::size_t size >
+auto CircularBuffer<T, size>::put( const T input ) -> void {
+    if (m_linkedList.size() == size) {
+        m_linkedList.popFront();
     }
-    m_linkedList.Add(input);
+    m_linkedList.add(input);
 }
 
-template < typename T, const int size >
-auto CircularBuffer<T,size>::Remove( const T input ) -> void {
-    m_linkedList.Remove(input);
+template < typename T, std::size_t size >
+auto CircularBuffer<T, size>::remove( const T input ) -> void {
+    m_linkedList.remove(input);
+}
+
+template < typename T, std::size_t size >
+auto CircularBuffer<T, size>::removeAll() -> void {
+    m_linkedList.clear();
+}
+
+template < typename T, std::size_t size >
+auto CircularBuffer<T, size>::empty() -> bool {
+    return m_linkedList.empty();
+}
+
+template < typename T, std::size_t size >
+auto CircularBuffer<T, size>::operator[] ( const std::size_t index ) -> T& {
+    try {
+        return m_linkedList[index];
+    } catch (...) {
+        throw;
+    }
 }
 
 #endif

@@ -14,6 +14,7 @@
 ***********************************************************/
 #include <iostream>
 #include <exception>
+#include <list>
 
 /***********************************************************
  *               internal includes
@@ -29,9 +30,10 @@ struct EDGE {
     EDGE() = delete;
     EDGE( const T _from, const T _to, const int w = 0 ) : 
         from(_from), to(_to), weight(w) {}
+    ~EDGE() = default;
     const T from, to;
     const int weight;
-};
+}; // struct EDGE
 
 template < typename T >
 /** @class Graph
@@ -44,7 +46,7 @@ public:
     *           
     * @param : none
     ******************************************************************************/
-    Graph( const unsigned int n );
+    explicit Graph( std::size_t n);
     /***************************************************************************//**
     * @brief : Destructor
     *           
@@ -56,42 +58,35 @@ public:
     * 
     * @param :  edge - single edge
     ******************************************************************************/
-    auto Add( const EDGE<T> edge ) -> void;
+    auto add( const EDGE<T> edge ) -> void;
     /***************************************************************************//**
     * @brief : Function to add list of edges
     * 
     * @param :  edges - list of edges
     ******************************************************************************/
-    auto Add( const std::list<EDGE<T>> edges ) -> void;
+    auto add( const std::list<EDGE<T>> edges ) -> void;
     /***************************************************************************//**
-    * @brief : chevron operator
+    * @brief : Get number of vertices
     * 
-    * @param :  out  -  reference to std::ostream
-    *           GR   -  reference to Graph structure
+    * @param :  none
+    * @return:  number of vertices
     ******************************************************************************/
-    friend auto operator << ( std::ostream &out, const Graph<T> &GR ) -> std::ostream& {
-        for ( auto i(0); i < GR.vertices; ++i ) {
-            out << GR.m_AdjacencyList[i] << CONSOLE_OUTPUT_NEW_LINE;
-        }
-        return out;
-    }
-
+    auto num_vertices() -> std::size_t;
 private:
     LinkedList<T> *m_AdjacencyList {nullptr};
-    const int vertices;
+    std::size_t vertices;
     /***************************************************************************//**
     * @brief : Find an element in the adjacency list 
     * 
     * @param : input 
     ******************************************************************************/
-    auto Find( const T input ) -> const int;
+    auto find( const T input ) -> std::size_t;
 }; // class Graph
-
 /***********************************************************
  *                Functions definition
 ************************************************************/
 template < typename T >
-Graph<T>::Graph( const unsigned int v ) : vertices(v) {
+Graph<T>::Graph( std::size_t v ) : vertices(v) {
     m_AdjacencyList = new LinkedList<T>[vertices];
 }
 
@@ -101,25 +96,29 @@ Graph<T>::~Graph() {
 }
 
 template < typename T >
-auto Graph<T>::Find( const T input ) -> const int {
+auto Graph<T>::find( const T input ) -> std::size_t {
     for ( auto i(0); i < vertices; ++i ) {
-        if (m_AdjacencyList[i].Empty()) continue;
-        if (input == m_AdjacencyList[i].Front()) 
-            return i; 
+        if (m_AdjacencyList[i].empty()) continue;
+        try {
+            if (input == m_AdjacencyList[i].front()) 
+                return i;
+        } catch (std::exception &e) {
+            std::cout << e.what() << std::endl;
+        } 
     }
     return NOT_DEFINED;
 }
 
 template < typename T >
-auto Graph<T>::Add( const EDGE<T> edge ) -> void {
-    auto Edge_Pos = Find(edge.from);
+auto Graph<T>::add( const EDGE<T> edge ) -> void {
+    auto Edge_Pos = find(edge.from);
     static int index = 0;
     if (NOT_DEFINED != Edge_Pos) {
-        m_AdjacencyList[Edge_Pos].Add(edge.to);
+        m_AdjacencyList[Edge_Pos].add(edge.to);
     } else {
         try {
-            m_AdjacencyList[index].Add(edge.from);
-            m_AdjacencyList[index].Add(edge.to);
+            m_AdjacencyList[index].add(edge.from);
+            m_AdjacencyList[index].add(edge.to);
             index++;
         } catch (std::exception &e) {
             std::cout << e.what() << std::endl;
@@ -128,10 +127,15 @@ auto Graph<T>::Add( const EDGE<T> edge ) -> void {
 }
 
 template < typename T >
-auto Graph<T>::Add( const std::list<EDGE<T>> edges ) -> void {
+auto Graph<T>::add( const std::list<EDGE<T>> edges ) -> void {
     for ( auto l : edges ) {
-        Add(l);
+        add(l);
     }
+}
+
+template < typename T >
+auto Graph<T>::num_vertices() -> std::size_t {
+    return vertices;
 }
 
 #endif

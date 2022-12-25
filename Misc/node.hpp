@@ -55,7 +55,7 @@ template < typename T >
  *  @param in  : data - data hold by a node
  *               next - pointer to next node
  *               prev - pointer to previous node
- *  @param out : new Node
+ *  @return : new Node
  */
 auto createNewNode( const T data, 
                     Node<T> *next = nullptr, 
@@ -84,7 +84,7 @@ template < typename T >
  *  @param in  : data  - data hold by a tree node
  *               left  - pointer to left tree node
  *               right - pointer to right tree node
- *  @param out : new TreeNode
+ *  @return : new TreeNode
  */
 auto createNewTreeNode( const T data,
                         TreeNode<T> *left  = nullptr,

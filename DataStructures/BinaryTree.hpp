@@ -40,64 +40,68 @@ public:
     /***************************************************************************//**
     * @brief : Insert element to the binary tree
     *           
-    * @param : data  - data of T type
+    * @param in: data  - data of T type
     ******************************************************************************/
-    auto Insert( const T data ) -> void;
+    auto insert( const T data ) -> void;
     /***************************************************************************//**
-    * @brief : chevron operator
-    * 
-    * @param :  out  -  reference to std::ostream
-    *           BT   -  reference to BinaryTree
+    * @brief : Find the Tree Node that contains data
+    *           
+    * @param in : data  - data of T type
+    * @return   : TreeNode<T>* - pointer to the node that contains data 
     ******************************************************************************/
-    friend auto operator << ( std::ostream &out, const BinaryTree<T> &BT ) -> std::ostream& {
-        int prev_level = 1, level = 1;
-        LinkedList<std::pair<TreeNode<T>*, int>> ll;
-        if ( nullptr != BT.root ) 
-            ll.Add(std::make_pair(BT.root, level));
-
-        while (!ll.Empty()){
-            auto front = ll.Front();
-            level = front.second;
-            if ( prev_level != level ) {
-                out << CONSOLE_OUTPUT_NEW_LINE;
-                prev_level = level;
-            }
-            out << front.first->data << CONSOLE_OUTPUT_SPACING;
-            if ( nullptr != front.first->left )
-                ll.Add(std::make_pair(front.first->left, level + 1));
-            if ( nullptr != front.first->right )
-                ll.Add(std::make_pair(front.first->right, level + 1));
-            ll.PopFront();
-        }
-        return out; 
-    }
-
+    auto find( const T data ) -> TreeNode<T>*;
+    /***************************************************************************//**
+    * @brief : Delete all elements of the binary tree
+    * 
+    * @param - none
+    ******************************************************************************/
+    auto clear() -> void;
+    /***************************************************************************//**
+    * @brief : Get the lenght of the current tree
+    * 
+    * @param  - none
+    * @return - lenght of the binary tree
+    ******************************************************************************/
+    auto lenght() -> std::size_t;
 private:
     TreeNode<T> *root {nullptr};
     /***************************************************************************//**
     * @brief  : Insert element to the binary tree
     *           
-    * @param : data - const T
-    *          node - TreeNode<T>
+    * @param in: data - const T
+    * @param in: node - TreeNode<T> reference to a pointer
     ******************************************************************************/
-    auto Insert( const T data, TreeNode<T> **node ) -> void;
+    auto insert( const T data, TreeNode<T> **node ) -> void;
+    /***************************************************************************//**
+    * @brief  : Insert element to the binary tree
+    *           
+    * @param in: data - const T
+    * @param out: TreeNode<T> - reference to a pointer to node containing data 
+    ******************************************************************************/
+    auto find( const T data, TreeNode<T> **node ) -> TreeNode<T>*;
+    /***************************************************************************//**
+    * @brief  : Return the lenght of the binary tree
+    *           
+    * @param in: TreeNode<T> - reference to a pointer to node containing data 
+    * @return  : lenght of the binary tree
+    ******************************************************************************/
+    auto lenght( const TreeNode<T> *node ) -> std::size_t;
 }; // class BinaryTree
-
 /***********************************************************
  *                Functions definition
 ************************************************************/
 template < typename T >
 BinaryTree<T>::~BinaryTree() {
-    removeTreeNode(root);
+    clear();
 }
 
 template < typename T >
-auto BinaryTree<T>::Insert( const T data ) -> void {
+auto BinaryTree<T>::insert( const T data ) -> void {
     Insert(data, &root);
 }
 
 template < typename T >
-auto BinaryTree<T>::Insert( const T data, TreeNode<T> **node ) -> void {
+auto BinaryTree<T>::insert( const T data, TreeNode<T> **node ) -> void {
     if (nullptr == *node) {
         (*node) = createNewTreeNode(data);
     } else {
@@ -107,6 +111,41 @@ auto BinaryTree<T>::Insert( const T data, TreeNode<T> **node ) -> void {
             Insert(data, &((*node)->right));
         }
     }
+}
+
+template < typename T >
+auto BinaryTree<T>::find( const T data ) -> TreeNode<T>* {
+    return find(data, &root);
+}
+
+template < typename T >
+auto BinaryTree<T>::find( const T data, TreeNode<T> **node ) -> TreeNode<T>* {
+    if (nullptr != *node) {
+        if ((*node)->data == data) return *node;
+        if ((*node)->data > data)  return find(data, &((*node)->left));
+        else return find(data, &((*node)->right)); 
+    }
+    return nullptr;
+}
+
+template < typename T >
+auto BinaryTree<T>::clear() -> void {
+    removeTreeNode(root);
+}
+
+template < typename T >
+auto BinaryTree<T>::lenght() -> std::size_t {
+    return lenght(root);
+}
+
+template < typename T >
+auto BinaryTree<T>::lenght( const TreeNode<T> *node ) -> std::size_t {
+    int l = 0, r = 0;
+    if ( nullptr != node ) {
+        l = 1 + lenght(node->left);
+        r = 1 + lenght(node->right);
+    }
+    return (l > r) ? l : r;
 }
 
 #endif
